@@ -76,129 +76,34 @@ type Sound struct {
 	buffer [][]byte
 }
 
-// Array of all the sounds we have
-var AIRHORN *SoundCollection = &SoundCollection{
-	Prefix: "airhorn",
-	Commands: []string{
-		"!airhorn",
+var REKT *SoundCollection = &SoundCollection{
+	Prefix: "NA",
+	Commands: []string {
+		"!rekt",
+		"!brutal",
+		"!savage",
+		"!chatwheel105",
 	},
 	Sounds: []*Sound{
-		createSound("default", 1000, 250),
-		createSound("reverb", 800, 250),
-		createSound("spam", 800, 0),
-		createSound("tripletap", 800, 250),
-		createSound("fourtap", 800, 250),
-		createSound("distant", 500, 250),
-		createSound("echo", 500, 250),
-		createSound("clownfull", 250, 250),
-		createSound("clownshort", 250, 250),
-		createSound("clownspam", 250, 0),
-		createSound("highfartlong", 200, 250),
-		createSound("highfartshort", 200, 250),
-		createSound("midshort", 100, 250),
-		createSound("truck", 10, 250),
+		createSound("rekt", 1, 250),
 	},
 }
 
-var KHALED *SoundCollection = &SoundCollection{
-	Prefix:    "another",
-	ChainWith: AIRHORN,
-	Commands: []string{
-		"!anotha",
-		"!anothaone",
+var WAOW *SoundCollection = &SoundCollection{
+	Prefix: "waow",
+	Commands: []string {
+		"!waow",
+		"!wow",
+		"!chatwheel99",
 	},
 	Sounds: []*Sound{
-		createSound("one", 1, 250),
-		createSound("one_classic", 1, 250),
-		createSound("one_echo", 1, 250),
-	},
-}
-
-var CENA *SoundCollection = &SoundCollection{
-	Prefix: "jc",
-	Commands: []string{
-		"!johncena",
-		"!cena",
-	},
-	Sounds: []*Sound{
-		createSound("airhorn", 1, 250),
-		createSound("echo", 1, 250),
-		createSound("full", 1, 250),
-		createSound("jc", 1, 250),
-		createSound("nameis", 1, 250),
-		createSound("spam", 1, 250),
-	},
-}
-
-var ETHAN *SoundCollection = &SoundCollection{
-	Prefix: "ethan",
-	Commands: []string{
-		"!ethan",
-		"!eb",
-		"!ethanbradberry",
-		"!h3h3",
-	},
-	Sounds: []*Sound{
-		createSound("areyou_classic", 100, 250),
-		createSound("areyou_condensed", 100, 250),
-		createSound("areyou_crazy", 100, 250),
-		createSound("areyou_ethan", 100, 250),
-		createSound("classic", 100, 250),
-		createSound("echo", 100, 250),
-		createSound("high", 100, 250),
-		createSound("slowandlow", 100, 250),
-		createSound("cuts", 30, 250),
-		createSound("beat", 30, 250),
-		createSound("sodiepop", 1, 250),
-	},
-}
-
-var COW *SoundCollection = &SoundCollection{
-	Prefix: "cow",
-	Commands: []string{
-		"!stan",
-		"!stanislav",
-	},
-	Sounds: []*Sound{
-		createSound("herd", 10, 250),
-		createSound("moo", 10, 250),
-		createSound("x3", 1, 250),
-	},
-}
-
-var BIRTHDAY *SoundCollection = &SoundCollection{
-	Prefix: "birthday",
-	Commands: []string{
-		"!birthday",
-		"!bday",
-	},
-	Sounds: []*Sound{
-		createSound("horn", 50, 250),
-		createSound("horn3", 30, 250),
-		createSound("sadhorn", 25, 250),
-		createSound("weakhorn", 25, 250),
-	},
-}
-
-var WOW *SoundCollection = &SoundCollection{
-	Prefix: "wow",
-	Commands: []string{
-		"!wowthatscool",
-		"!wtc",
-	},
-	Sounds: []*Sound{
-		createSound("thatscool", 50, 250),
+		createSound("waow", 1, 250),
 	},
 }
 
 var COLLECTIONS []*SoundCollection = []*SoundCollection{
-	AIRHORN,
-	KHALED,
-	CENA,
-	ETHAN,
-	COW,
-	BIRTHDAY,
-	WOW,
+	REKT,
+	WAOW,
 }
 
 // Create a Sound struct
@@ -240,7 +145,7 @@ func (s *SoundCollection) Random() *Sound {
 // https://github.com/nstafie/dca-rs
 // eg: dca-rs --raw -i <input wav file> > <output file>
 func (s *Sound) Load(c *SoundCollection) error {
-	path := fmt.Sprintf("audio/%v_%v.dca", c.Prefix, s.Name)
+	path := fmt.Sprintf("audio/%v.dca", s.Name)
 
 	file, err := os.Open(path)
 
@@ -461,7 +366,7 @@ func onReady(s *discordgo.Session, event *discordgo.Ready) {
 }
 
 func onGuildCreate(s *discordgo.Session, event *discordgo.GuildCreate) {
-	if event.Guild.Unavailable != nil {
+	if event.Guild.Unavailable {
 		return
 	}
 
@@ -480,14 +385,6 @@ func scontains(key string, options ...string) bool {
 		}
 	}
 	return false
-}
-
-func calculateAirhornsPerSecond(cid string) {
-	current, _ := strconv.Atoi(rcli.Get("airhorn:a:total").Val())
-	time.Sleep(time.Second * 10)
-	latest, _ := strconv.Atoi(rcli.Get("airhorn:a:total").Val())
-
-	discord.ChannelMessageSend(cid, fmt.Sprintf("Current APS: %v", (float64(latest-current))/10.0))
 }
 
 func displayBotStats(cid string) {
@@ -563,28 +460,6 @@ func utilGetMentioned(s *discordgo.Session, m *discordgo.MessageCreate) *discord
 	return nil
 }
 
-func airhornBomb(cid string, guild *discordgo.Guild, user *discordgo.User, cs string) {
-	count, _ := strconv.Atoi(cs)
-	discord.ChannelMessageSend(cid, ":ok_hand:"+strings.Repeat(":trumpet:", count))
-
-	// Cap it at something
-	if count > 100 {
-		return
-	}
-
-	play := createPlay(user, guild, AIRHORN, nil)
-	vc, err := discord.ChannelVoiceJoin(play.GuildID, play.ChannelID, true, true)
-	if err != nil {
-		return
-	}
-
-	for i := 0; i < count; i++ {
-		AIRHORN.Random().Play(vc)
-	}
-
-	vc.Disconnect()
-}
-
 // Handles bot operator messages, should be refactored (lmao)
 func handleBotControlMessages(s *discordgo.Session, m *discordgo.MessageCreate, parts []string, g *discordgo.Guild) {
 	if scontains(parts[1], "status") {
@@ -597,14 +472,10 @@ func handleBotControlMessages(s *discordgo.Session, m *discordgo.MessageCreate, 
 		} else {
 			displayServerStats(m.ChannelID, g.ID)
 		}
-	} else if scontains(parts[1], "bomb") && len(parts) >= 4 {
-		airhornBomb(m.ChannelID, g, utilGetMentioned(s, m), parts[3])
-	} else if scontains(parts[1], "aps") {
-		s.ChannelMessageSend(m.ChannelID, ":ok_hand: give me a sec m8")
-		go calculateAirhornsPerSecond(m.ChannelID)
 	}
 }
 
+// Reads new messages sent on the Discord chat (users trying to input commands)
 func onMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if len(m.Content) <= 0 || (m.Content[0] != '!' && len(m.Mentions) < 1) {
 		return
@@ -612,7 +483,7 @@ func onMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	msg := strings.Replace(m.ContentWithMentionsReplaced(), s.State.Ready.User.Username, "username", 1)
 	parts := strings.Split(strings.ToLower(msg), " ")
-
+	
 	channel, _ := discord.State.Channel(m.ChannelID)
 	if channel == nil {
 		log.WithFields(log.Fields{
@@ -648,6 +519,8 @@ func onMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
+	//add help command
+	//if parts[0] == "!"
 	// Find the collection for the command we got
 	for _, coll := range COLLECTIONS {
 		if scontains(parts[0], coll.Commands...) {
